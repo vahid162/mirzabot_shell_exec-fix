@@ -18,14 +18,14 @@
 
 ```bash
 # مثال:
-cd /www/wwwroot/[your-domain.com/telegram_bot/bot_folder_name/](https://your-domain.com/telegram_bot/bot_folder_name/)
+cd /www/wwwroot/your-domain.com/telegram_bot/bot_folder_name
 ```
 
 ### ۳. اجرای اسکریپت نصب
 دستور زیر را کپی کرده و در ترمینال خود پیست کنید و اینتر را بزنید. اسکریпт به صورت خودکار همه چیز را مدیریت می‌کند.
 
 ```bash
-curl -sSL [https://raw.githubusercontent.com/vahid162/mirzabot_shell_exec-fix/main/installer.sh](https://raw.githubusercontent.com/vahid162/mirzabot_shell_exec-fix/main/installer.sh) | sudo bash
+curl -sSL (https://raw.githubusercontent.com/vahid162/mirzabot_shell_exec-fix/main/installer.sh) | sudo bash
 ```
 
 > **نکته:** اگر ربات‌های دیگری دارید، کافیست به پوشه آنها بروید (مرحله ۲) و همین دستور را برای هر کدام دوباره اجرا کنید.
