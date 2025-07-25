@@ -22,7 +22,7 @@ cd /www/wwwroot/your-domain.com/telegram_bot/bot_folder_name
 ```
 
 ### ۳. اجرای اسکریپت نصب
-دستور زیر را کپی کرده و در ترمینال خود پیست کنید و اینتر را بزنید. اسکریпт به صورت خودکار همه چیز را مدیریت می‌کند.
+دستور زیر را کپی کرده و در ترمینال خود پیست کنید و اینتر را بزنید. اسکریپت به صورت خودکار همه چیز را مدیریت می‌کند.
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/vahid162/mirzabot_shell_exec-fix/main/installer.sh | sudo bash
