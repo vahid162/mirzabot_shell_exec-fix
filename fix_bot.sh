@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# --- Automatic Security Fix Script for Telegram Bot (v3 - Final) ---
+# --- Automatic Security Fix Script for Telegram Bot (v4 - Final Corrected) ---
 
 # --- Configuration ---
 HELPER_SCRIPT_PATH="/usr/local/bin/cron_helper.sh"
@@ -60,19 +60,23 @@ patch_php_files() {
         print_error "Could not find admin.php or index.php in the current directory."
     fi
     
-    # Create backups first, in case of failure
-    cp "$index_file" "$index_file.bak"
-    cp "$admin_file" "$admin_file.bak"
+    # Create backups first
+    cp "$index_file" "$index_file.bak.$$"
+    cp "$admin_file" "$admin_file.bak.$$"
 
-    # Patch index.php & admin.php
+    # --- Patch index.php ---
     perl -i -0777 -pe 's{if \(function_exists\x28\x27shell_exec\x27\)\s*&&\s*is_callable\x28\x27shell_exec\x27\)\)\s*\{.*?shell_exec\(\$command\);\s*\}\s*\}}{if (function_exists(\x27shell_exec\x27) \&\& is_callable(\x27shell_exec\x27)) {\n        \$phpFilePath = "https:\/\/{\$domainhosts}\/cron\/sendmessage.php";\n        \$cronCommand = "*\/1 * * * * curl {\$phpFilePath}";\n        shell_exec("sudo /usr/local/bin/cron_helper.sh add " . escapeshellarg(\$cronCommand));\n    }}sg' "$index_file" || print_error "Failed to patch index.php"
     
+    # --- Patch admin.php ---
+    # 1. Remove initial check
     perl -i -0777 -pe 's{if\s*\(\s*!\(function_exists\(\x27shell_exec\x27\)\s*\&\&\s*is_callable\(\x27shell_exec\x27\)\)\)\s*\{.*?sendmessage.*?;\s*\}}{}sg' "$admin_file" || print_error "Failed to patch admin.php (initial check)"
     
+    # 2. Fix cron settings menu check
     perl -i -0777 -pe 's{if\s*\(\$text\s*==\s*\$textbotlang\[\x27Admin\x27\]\[\x27keyboardadmin\x27\]\[\x27settingscron\x27\]\)\s*\{.*?return;\s*\}\s*sendmessage\(\$from_id,\s*\$textbotlang\[\x27users\x27\]\[\x27selectoption\x27\],\s*\$keyboardcronjob,\s*\x27HTML\x27\);\s*\}}{if (\$text == \$textbotlang[\x27Admin\x27][\x27keyboardadmin\x27][\x27settingscron\x27]) {\n        sendmessage(\$from_id, \$textbotlang[\x27users\x27][\x27selectoption\x27], \$keyboardcronjob, \x27HTML\x27);\n    }}sg' "$admin_file" || print_error "Failed to patch admin.php (menu check)"
     
+    # 3. Fix cron job management blocks
     for cron_type in test volume time remove; do
-        perl -i -0777 -pe 's{(\$text\s*==\s*\$textbotlang\[\x27Admin\x27\]\[\x27cron\x27\]\[\x27'"$cron_type"'\x27\]\[\x27active\x27\])\s*\{.*?shell_exec\(\$command\);}{sprintf("%s) { shell_exec(\"sudo /usr/local/bin/cron_helper.sh add \" . escapeshellarg(\$cronCommand));", $1)}esg' "$admin_file" || print_error "Failed to patch admin.php (add $cron_type)"
+        perl -i -0777 -pe 's{(\$text\s*==\s*\$textbotlang\[\x27Admin\x27\]\[\x27cron\x27\]\[\x27'"$cron_type"'\x27\]\[\x27active\x27\])\s*\{.*?shell_exec\(\$command\);\s*\}}{sprintf("%s) { %s; shell_exec(\"sudo /usr/local/bin/cron_helper.sh add \" . escapeshellarg(\$cronCommand)); }", $1, $&)}esg' "$admin_file" || print_error "Failed to patch admin.php (add $cron_type)"
         perl -i -0777 -pe 's{(\$text\s*==\s*\$textbotlang\[\x27Admin\x27\]\[\x27cron\x27\]\[\x27'"$cron_type"'\x27\]\[\x27disable\x27\])\s*\{.*?(\$jobToRemove\s*=\s*.*?);.*?shell_exec\(\x27crontab\s*\/tmp\/crontab\.txt\x27\);.*?unlink.*?;\s*\}}{sprintf("%s) { %s; shell_exec(\"sudo /usr/local/bin/cron_helper.sh remove \" . escapeshellarg(\$jobToRemove)); }", $1, $2)}esg' "$admin_file" || print_error "Failed to patch admin.php (disable $cron_type)"
     done
     
@@ -80,6 +84,8 @@ patch_php_files() {
 }
 
 # --- Main Logic ---
+set -e # Exit immediately if a command exits with a non-zero status.
+
 if [ "$(id -u)" -ne 0 ]; then print_error "This script must be run with sudo. Example: curl ... | sudo bash"; fi
 BOT_DIRECTORY=$(pwd)
 print_info "Operating in directory: ${BOT_DIRECTORY}"
@@ -92,7 +98,7 @@ fi
 patch_php_files "$BOT_DIRECTORY"
 echo
 print_success "Script finished for directory: ${BOT_DIRECTORY}"
-print_success "Backup files (.bak) have been created."
+print_info "Backup files (.bak.$$) have been created."
 echo
 print_info "FINAL MANUAL STEP: Go to your aapanel, select your PHP version,"
 print_info "go to 'Disable functions', and add 'shell_exec' to the list to finalize the security."
