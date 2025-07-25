@@ -25,7 +25,7 @@ cd /www/wwwroot/your-domain.com/telegram_bot/bot_folder_name
 دستور زیر را کپی کرده و در ترمینال خود پیست کنید و اینتر را بزنید. اسکریпт به صورت خودکار همه چیز را مدیریت می‌کند.
 
 ```bash
-curl -sSL (https://raw.githubusercontent.com/vahid162/mirzabot_shell_exec-fix/main/installer.sh) | sudo bash
+curl -sSL https://raw.githubusercontent.com/vahid162/mirzabot_shell_exec-fix/main/installer.sh | sudo bash
 ```
 
 
@@ -214,11 +214,7 @@ sudo chmod 750 /usr/local/bin/cron_helper.sh
 
 این آخرین و مهم‌ترین قدم برای بستن حفره امنیتی است.
 
-1.  وارد پنل **aapanel** شوید.
-2.  از منوی سمت چپ به **App Store** بروید.
-3.  نسخه PHP خود (مثلاً `PHP-8.1`) را پیدا کرده و روی **Settings** کلیک کنید.
-4.  به تب **Disable functions** بروید.
-5.  در کادر متنی، `shell_exec` را وارد کرده و لیست را ذخیره کنید.
+
 
 ---
 
