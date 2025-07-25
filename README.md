@@ -28,12 +28,11 @@ cd /www/wwwroot/your-domain.com/telegram_bot/bot_folder_name
 curl -sSL (https://raw.githubusercontent.com/vahid162/mirzabot_shell_exec-fix/main/installer.sh) | sudo bash
 ```
 
-> **نکته:** اگر ربات‌های دیگری دارید، کافیست به پوشه آنها بروید (مرحله ۲) و همین دستور را برای هر کدام دوباره اجرا کنید.
 
-### ۴. غیرفعال کردن `shell_exec` در aapanel
+### ۴. غیرفعال کردن `shell_exec`
 این **مهم‌ترین قدم نهایی** برای بستن حفره امنیتی است.
 
-ربات شما اکنون امن و کاملاً کاربردی است!
+سرور شما اکنون امن و کاملاً کاربردی است!
 
 
 
